@@ -51,6 +51,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         imageview = (ImageView)findViewById(R.id.imageView);
         bSave.setVisibility(View.INVISIBLE);
        //nicher EmergencyApp name ta change hobe
+
+        ArrayAdapter<CharSequence> adapterBlood = ArrayAdapter.createFromResource(this,
+                R.array.BloodGroup, android.R.layout.simple_spinner_item);
+        adapterBlood.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sBlood.setAdapter(adapterBlood);
         User_Info appearanceInfo = EmergencyApp.getWritableDatabaseUserInfo().readAppearanceInfo();
         if (appearanceInfo.getId() != -1) {
             eName.setText(appearanceInfo.getName());
@@ -59,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             eInstitution.setText(appearanceInfo.getInstitution());
             eEmergency1.setText(appearanceInfo.getEmergency1());
             eEmergency2.setText(appearanceInfo.getEmergency2());
+            sBlood.setSelection(adapterBlood.getPosition(appearanceInfo.getBloodgroup()));
         }
         bEdit.setOnClickListener(this);
         bSave.setOnClickListener(this);
@@ -70,10 +76,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
         vanishKeyboard();
     }
-/* The following code snippets are taken from renowned developer
-   Ajoy Das of CSE from 14 batch of BUET.
-   Thanks Boss for giving me the opportunity to read your code. :D
- */
     private void vanishKeyboard() {
         eName.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             public void onFocusChange(View v, boolean hasFocus) {
@@ -131,14 +133,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void onClick(View view){
         if(view == bSave){
-            User_Info userinfo = new User_Info(eName.getText().toString(),ePhone.getText().toString(),eAddress.getText().toString(),
-                    eInstitution.getText().toString(),eEmergency1.getText().toString(),eEmergency2.getText().toString(),sBlood.getSelectedItem().toString());
-            EmergencyApp.getWritableDatabaseUserInfo().insertUserInfo(userinfo, true);
-            Msg.COUT(this,"Saved Successfully");
-            bEdit.setVisibility(View.VISIBLE);
-            bSave.setVisibility(View.INVISIBLE);
+            if(!eName.getText().toString().equals("")) {
+                User_Info userinfo = new User_Info(eName.getText().toString(), ePhone.getText().toString(), eAddress.getText().toString(),
+                        eInstitution.getText().toString(), eEmergency1.getText().toString(), eEmergency2.getText().toString(), sBlood.getSelectedItem().toString());
+                EmergencyApp.getWritableDatabaseUserInfo().insertUserInfo(userinfo, true);
+                Msg.COUT(this, "Saved Successfully");
+                bEdit.setVisibility(View.VISIBLE);
+                bSave.setVisibility(View.INVISIBLE);
+            }
         }
-        else{
+        else if(view == bEdit){
             bEdit.setVisibility(View.INVISIBLE);
             bSave.setVisibility(View.VISIBLE);
             User_Info userinfo = new User_Info(eName.getText().toString(),ePhone.getText().toString(),eAddress.getText().toString(),

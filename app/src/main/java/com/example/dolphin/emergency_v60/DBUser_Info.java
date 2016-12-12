@@ -59,20 +59,20 @@ public class DBUser_Info {
         //get a list of columns to be retrieved, we need all of them
         String[] columns = {DBUser_Info.UserInfoHelper.COLUMN_ID,
                 DBUser_Info.UserInfoHelper.COLUMN_Name,
-                DBUser_Info.UserInfoHelper.COLUMN_ID,
+                UserInfoHelper.COLUMN_Phone,
                 DBUser_Info.UserInfoHelper.COLUMN_Address,
                 DBUser_Info.UserInfoHelper.COLUMN_Institution,
                 DBUser_Info.UserInfoHelper.COLUMN_Emergency1,
                 DBUser_Info.UserInfoHelper.COLUMN_Emergency2,
-                DBUser_Info.UserInfoHelper.COLUMN_Bloodgroup,
+                DBUser_Info.UserInfoHelper.COLUMN_Bloodgroup
         };
         Cursor cursor = mDatabase.query(DBUser_Info.UserInfoHelper.TABLE_APPEARANCE_INFO, columns, null, null, null, null, null);
         if (cursor != null && cursor.moveToFirst()) {
             Msg.mymsg("loading entries " + cursor.getCount() + new Date(System.currentTimeMillis()));
             System.out.println("Getting elements......");
-            userinfo.setId(cursor.getInt(cursor.getColumnIndex(DBUser_Info.UserInfoHelper.COLUMN_Name)));
+            userinfo.setId(cursor.getInt(cursor.getColumnIndex(UserInfoHelper.COLUMN_ID)));
             userinfo.setName(cursor.getString(cursor.getColumnIndex(DBUser_Info.UserInfoHelper.COLUMN_Name)));
-            userinfo.setPhone(cursor.getString(cursor.getColumnIndex(DBUser_Info.UserInfoHelper.COLUMN_Address)));
+            userinfo.setPhone(cursor.getString(cursor.getColumnIndex(UserInfoHelper.COLUMN_Phone)));
             userinfo.setAddress(cursor.getString(cursor.getColumnIndex(DBUser_Info.UserInfoHelper.COLUMN_Address)));
             userinfo.setInstitution(cursor.getString(cursor.getColumnIndex(DBUser_Info.UserInfoHelper.COLUMN_Institution)));
             userinfo.setEmergency1(cursor.getString(cursor.getColumnIndex(DBUser_Info.UserInfoHelper.COLUMN_Emergency1)));
@@ -89,7 +89,6 @@ public class DBUser_Info {
 
     private static class UserInfoHelper extends SQLiteOpenHelper {
         public static final String TABLE_APPEARANCE_INFO = "appearance_info";
-
         public static final String COLUMN_ID = "_id";
         public static final String COLUMN_Name = "Name";
         public static final String COLUMN_Phone = "Phone";
@@ -106,7 +105,8 @@ public class DBUser_Info {
                 COLUMN_Address + " TEXT," +
                 COLUMN_Institution + " TEXT," +
                 COLUMN_Emergency1 + " TEXT," +
-                COLUMN_Emergency2 + " TEXT" +
+                COLUMN_Emergency2 + " TEXT," +
+                COLUMN_Bloodgroup + " TEXT" +
                 ");";
 
         private static final String DB_NAME = "appearanceInfo_db";
