@@ -50,7 +50,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         icamera = (Button) findViewById(R.id.icamera);
         imageview = (ImageView)findViewById(R.id.imageView);
         bSave.setVisibility(View.INVISIBLE);
-       //nicher EmergencyApp name ta change hobe
+        eName.setEnabled(false);
+        ePhone.setEnabled(false);
+        eAddress.setEnabled(false);
+        eInstitution.setEnabled(false);
+        eEmergency1.setEnabled(false);
+        eEmergency2.setEnabled(false);
+
 
         ArrayAdapter<CharSequence> adapterBlood = ArrayAdapter.createFromResource(this,
                 R.array.BloodGroup, android.R.layout.simple_spinner_item);
@@ -133,17 +139,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void onClick(View view){
         if(view == bSave){
+            eName.setEnabled(false);
+            ePhone.setEnabled(false);
+            eAddress.setEnabled(false);
+            eInstitution.setEnabled(false);
+            eEmergency1.setEnabled(false);
+            eEmergency2.setEnabled(false);
             if(!eName.getText().toString().equals("")) {
                 User_Info userinfo = new User_Info(eName.getText().toString(), ePhone.getText().toString(), eAddress.getText().toString(),
                         eInstitution.getText().toString(), eEmergency1.getText().toString(), eEmergency2.getText().toString(), sBlood.getSelectedItem().toString());
                 EmergencyApp.getWritableDatabaseUserInfo().insertUserInfo(userinfo, true);
                 Msg.COUT(this, "Saved Successfully");
                 bEdit.setVisibility(View.VISIBLE);
-                bSave.setVisibility(View.INVISIBLE);
+                bSave.setVisibility(View.GONE);
             }
         }
         else if(view == bEdit){
-            bEdit.setVisibility(View.INVISIBLE);
+            eName.setEnabled(true);
+            ePhone.setEnabled(true);
+            eAddress.setEnabled(true);
+            eInstitution.setEnabled(true);
+            eEmergency1.setEnabled(true);
+            eEmergency2.setEnabled(true);
+            bEdit.setVisibility(View.GONE);
+            //bEdit.setVisibility(View.INVISIBLE);
             bSave.setVisibility(View.VISIBLE);
             User_Info userinfo = new User_Info(eName.getText().toString(),ePhone.getText().toString(),eAddress.getText().toString(),
                     eInstitution.getText().toString(),eEmergency1.getText().toString(),eEmergency2.getText().toString(),sBlood.getSelectedItem().toString());
