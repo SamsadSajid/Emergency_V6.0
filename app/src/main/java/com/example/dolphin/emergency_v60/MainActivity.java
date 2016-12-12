@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         eInstitution.setEnabled(false);
         eEmergency1.setEnabled(false);
         eEmergency2.setEnabled(false);
-
+        sBlood.setEnabled(false);
 
         ArrayAdapter<CharSequence> adapterBlood = ArrayAdapter.createFromResource(this,
                 R.array.BloodGroup, android.R.layout.simple_spinner_item);
@@ -145,6 +145,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             eInstitution.setEnabled(false);
             eEmergency1.setEnabled(false);
             eEmergency2.setEnabled(false);
+            sBlood.setEnabled(false);
             if(!eName.getText().toString().equals("")) {
                 User_Info userinfo = new User_Info(eName.getText().toString(), ePhone.getText().toString(), eAddress.getText().toString(),
                         eInstitution.getText().toString(), eEmergency1.getText().toString(), eEmergency2.getText().toString(), sBlood.getSelectedItem().toString());
@@ -161,6 +162,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             eInstitution.setEnabled(true);
             eEmergency1.setEnabled(true);
             eEmergency2.setEnabled(true);
+            sBlood.setEnabled(true);
             bEdit.setVisibility(View.GONE);
             //bEdit.setVisibility(View.INVISIBLE);
             bSave.setVisibility(View.VISIBLE);
