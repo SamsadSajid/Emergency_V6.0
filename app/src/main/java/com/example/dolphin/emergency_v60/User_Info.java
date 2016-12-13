@@ -1,19 +1,32 @@
 package com.example.dolphin.emergency_v60;
 
+import com.activeandroid.Model;
+import com.activeandroid.annotation.Column;
+import com.activeandroid.annotation.Table;
+
 /**
  * Created by DOLPHIN on 12/12/2016.
  */
-public class User_Info {
-    int id;
+@Table(name = "UserInfo")
+public class User_Info extends Model {
+    @Column(name = "name")
     private String name;
+    @Column(name = "phone")
     private String phone;
+    @Column(name = "address")
     private String address;
+    @Column(name = "institution")
     private String institution;
+    @Column(name = "emergency1")
     private String emergency1;
+    @Column(name = "emergency2")
     private String emergency2;
+    @Column(name = "bloodgroup")
     private String bloodgroup;
 
-    public User_Info(){}
+    public User_Info(){
+        super();
+    }
 
     public User_Info(String name,String phone,String address,String institution,String emergency1,String emergency2,String bloodgroup){
         this.name=name;
@@ -23,14 +36,6 @@ public class User_Info {
         this.emergency1=emergency1;
         this.emergency2=emergency2;
         this.bloodgroup=bloodgroup;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getName() {

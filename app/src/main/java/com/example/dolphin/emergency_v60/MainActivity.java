@@ -15,6 +15,8 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.activeandroid.query.Select;
+
 import java.net.URI;
 
 
@@ -32,6 +34,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Button icamera;
     private static final int PICK_IMAGE = 100;
     ImageView imageview;
+    User_Info user_info;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 R.array.BloodGroup, android.R.layout.simple_spinner_item);
         adapterBlood.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sBlood.setAdapter(adapterBlood);
-        User_Info appearanceInfo = EmergencyApp.getWritableDatabaseUserInfo().readAppearanceInfo();
+        /*User_Info appearanceInfo = EmergencyApp.getWritableDatabaseUserInfo().readAppearanceInfo();
         if (appearanceInfo.getId() != -1) {
             eName.setText(appearanceInfo.getName());
             ePhone.setText(appearanceInfo.getPhone());
@@ -65,6 +68,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             eEmergency1.setText(appearanceInfo.getEmergency1());
             eEmergency2.setText(appearanceInfo.getEmergency2());
             sBlood.setSelection(adapterBlood.getPosition(appearanceInfo.getBloodgroup()));
+        }*/
+
+        try{
+            user_info=new Select().from(User_Info.class).executeSingle();
+        }
+        catch (Exception e) {
+            user_info = new User_Info();
+        }
+
+        if(user_info==null)user_info=new User_Info();
+        else
+        {
+            eName.setText(user_info.getName());
+            ePhone.setText(user_info.getPhone());
+            eAddress.setText(user_info.getAddress());
+            eInstitution.setText(user_info.getInstitution());
+            eEmergency1.setText(user_info.getEmergency1());
+            eEmergency2.setText(user_info.getEmergency2());
+            sBlood.setSelection(adapterBlood.getPosition(user_info.getBloodgroup()));
         }
         bEdit.setOnClickListener(this);
         bSave.setOnClickListener(this);
@@ -145,9 +167,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         else if(view == bEdit){
             bEdit.setVisibility(View.INVISIBLE);
             bSave.setVisibility(View.VISIBLE);
-            User_Info userinfo = new User_Info(eName.getText().toString(),ePhone.getText().toString(),eAddress.getText().toString(),
-                    eInstitution.getText().toString(),eEmergency1.getText().toString(),eEmergency2.getText().toString(),sBlood.getSelectedItem().toString());
-            EmergencyApp.getWritableDatabaseUserInfo().insertUserInfo(userinfo, true);
+            user_info.setName(eName.getText().toString());
+            user_info.setPhone(ePhone.getText().toString());
+            user_info.setAddress(eAddress.getText().toString());
+            user_info.setInstitution(eInstitution.getText().toString());
+            user_info.setEmergency1(eEmergency1.getText().toString());
+            user_info.setEmergency2(eEmergency2.getText().toString());
+            user_info.setBloodgroup(sBlood.getSelectedItem().toString());
+            user_info.save();
             Msg.COUT(this,"Informations Inserted Successfully");
         }
     }

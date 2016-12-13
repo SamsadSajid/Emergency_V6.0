@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import com.activeandroid.ActiveAndroid;
+
 /**
  * Created by DOLPHIN on 12/12/2016.
  */
@@ -31,7 +33,8 @@ public class EmergencyApp extends Application {
     public void onCreate(){
         super.onCreate();
         sInstance=this;
-        mDatabaseUserInfo = new DBUser_Info(this);
+        //mDatabaseUserInfo = new DBUser_Info(this);
+        ActiveAndroid.initialize(this);
     }
 
     public static void saveToPreferences(Context context, String preferenceName, String preferenceValue) {

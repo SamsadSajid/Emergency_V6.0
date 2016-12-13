@@ -55,7 +55,7 @@ public class DBUser_Info {
 
     public User_Info readAppearanceInfo() {
         User_Info userinfo = new User_Info();
-        userinfo.setId(-1);
+        //userinfo.setId(-1);
         //get a list of columns to be retrieved, we need all of them
         String[] columns = {DBUser_Info.UserInfoHelper.COLUMN_ID,
                 DBUser_Info.UserInfoHelper.COLUMN_Name,
@@ -70,7 +70,7 @@ public class DBUser_Info {
         if (cursor != null && cursor.moveToFirst()) {
             Msg.mymsg("loading entries " + cursor.getCount() + new Date(System.currentTimeMillis()));
             System.out.println("Getting elements......");
-            userinfo.setId(cursor.getInt(cursor.getColumnIndex(UserInfoHelper.COLUMN_ID)));
+            //userinfo.setId(cursor.getInt(cursor.getColumnIndex(UserInfoHelper.COLUMN_ID)));
             userinfo.setName(cursor.getString(cursor.getColumnIndex(DBUser_Info.UserInfoHelper.COLUMN_Name)));
             userinfo.setPhone(cursor.getString(cursor.getColumnIndex(UserInfoHelper.COLUMN_Phone)));
             userinfo.setAddress(cursor.getString(cursor.getColumnIndex(DBUser_Info.UserInfoHelper.COLUMN_Address)));
