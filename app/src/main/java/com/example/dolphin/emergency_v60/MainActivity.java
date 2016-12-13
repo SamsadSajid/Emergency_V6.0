@@ -1,6 +1,8 @@
 package com.example.dolphin.emergency_v60;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,6 +16,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
+import android.net.Uri;
 
 import com.activeandroid.query.Select;
 
@@ -33,7 +36,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Button igallery;
     Button icamera;
     private static final int PICK_IMAGE = 100;
-    ImageView imageview;
+    private ImageView imageview;
     User_Info user_info;
 
     @Override
@@ -53,6 +56,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         icamera = (Button) findViewById(R.id.icamera);
         imageview = (ImageView)findViewById(R.id.imageView);
         bSave.setVisibility(View.INVISIBLE);
+        eName.setEnabled(false);
+        ePhone.setEnabled(false);
+        eAddress.setEnabled(false);
+        eInstitution.setEnabled(false);
+        eEmergency1.setEnabled(false);
+        eEmergency2.setEnabled(false);
+        sBlood.setEnabled(false);
        //nicher EmergencyApp name ta change hobe
 
         ArrayAdapter<CharSequence> adapterBlood = ArrayAdapter.createFromResource(this,
@@ -92,8 +102,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         bSave.setOnClickListener(this);
         igallery.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                //opengallary();
+            public void onClick(View v) {
+                openGallery();
             }
         });
         vanishKeyboard();
@@ -148,6 +158,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 
+
+
     public void hideKeyboard(View view) {
         InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
@@ -155,6 +167,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void onClick(View view){
         if(view == bSave){
+
+            eName.setEnabled(false);
+            ePhone.setEnabled(false);
+            eAddress.setEnabled(false);
+            eInstitution.setEnabled(false);
+            eEmergency1.setEnabled(false);
+            eEmergency2.setEnabled(false);
+            sBlood.setEnabled(false);
             if(!eName.getText().toString().equals("")) {
                 User_Info userinfo = new User_Info(eName.getText().toString(), ePhone.getText().toString(), eAddress.getText().toString(),
                         eInstitution.getText().toString(), eEmergency1.getText().toString(), eEmergency2.getText().toString(), sBlood.getSelectedItem().toString());
@@ -165,6 +185,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
         else if(view == bEdit){
+            eName.setEnabled(true);
+            ePhone.setEnabled(true);
+            eAddress.setEnabled(true);
+            eInstitution.setEnabled(true);
+            eEmergency1.setEnabled(true);
+            eEmergency2.setEnabled(true);
+            sBlood.setEnabled(true);
+
             bEdit.setVisibility(View.INVISIBLE);
             bSave.setVisibility(View.VISIBLE);
             user_info.setName(eName.getText().toString());
@@ -179,17 +207,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    /*private void opengallary(){
-        Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
-        startActivityForResult(gallery,PICK_IMAGE);
+    private void openGallery() {
+        Intent gallery =
+                new Intent(Intent.ACTION_PICK,
+                        android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+        startActivityForResult(gallery, PICK_IMAGE);
     }
-    @Override
-    protected void OnActivityResult(int requestcode,int resultcode,Intent data){
-        super.onActivityResult(requestcode,resultcode,data);
-        if(resultcode == RESULT_OK && requestcode == PICK_IMAGE){
-            URI imageURI = data.getData();
-            imageview.setImageURI(imageURI);
-        }
-    }*/
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK && requestCode == PICK_IMAGE) {
+            Uri imageUri = data.getData();
+            imageview.setImageURI(imageUri);
+        }
+    }
 }
