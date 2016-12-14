@@ -3,6 +3,8 @@
     package="com.example.dolphin.emergency_v60">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-feature android:name="android.hardware.camera"></uses-feature>
 
     <application
         android:allowBackup="true"

@@ -21,12 +21,15 @@ import android.widget.Toast;
 import android.net.Uri;
 
 import com.activeandroid.query.Select;
+import com.activeandroid.util.Log;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -42,7 +45,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Button igallery;
     Button icamera;
     private static final int PICK_IMAGE = 100;
-    private static final int TAKE_IMAGE = 100;
+    private static final int TAKE_IMAGE = 1;
+    private Bitmap bImageBitmap;
+    private String sCurrentPhotoPath;
     private ImageView imageview;
     User_Info user_info;
 
@@ -70,6 +75,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         eEmergency1.setEnabled(false);
         eEmergency2.setEnabled(false);
         sBlood.setEnabled(false);
+
+
        //nicher EmergencyApp name ta change hobe
 
         ArrayAdapter<CharSequence> adapterBlood = ArrayAdapter.createFromResource(this,
@@ -117,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         icamera.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v) {
-                takePhoto();
+                openCamera();
             }
         });
         vanishKeyboard();
@@ -239,48 +246,37 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         startActivityForResult(gallery, PICK_IMAGE);
     }
 
-    private void takePhoto() {
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT,
-                Uri.fromFile(getImageFile()));
-        startActivityForResult(intent, TAKE_IMAGE);
+    private void openCamera(){
+        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(cameraIntent, TAKE_IMAGE);
     }
+
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK && requestCode == PICK_IMAGE) {
+        if (requestCode == PICK_IMAGE && resultCode == RESULT_OK) {
             Uri imageUri = data.getData();
             imageview.setImageURI(imageUri);
         }
 
-        else if (resultCode == RESULT_OK && requestCode == TAKE_IMAGE) {
-            FileInputStream inputStream = null;
+        else if (requestCode == TAKE_IMAGE && resultCode == Activity.RESULT_OK) {
+            Uri imageUri = data.getData();
+
+            /*FileInputStream inputStream = null;
+            Bitmap photo = (Bitmap) data.getExtras().get("data");
+            imageview.setImageBitmap(photo);*/
+
             try {
-                inputStream = new FileInputStream(getImageFile());
-                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
+                // Log.d(TAG, String.valueOf(bitmap));
+
+                imageview = (ImageView) findViewById(R.id.imageView);
                 imageview.setImageBitmap(bitmap);
-            } catch (FileNotFoundException e) {
-                Msg.mymsg("Cant load image");
-            } finally {
-                closeStream(inputStream);
-            }
-        }
-    }
-
-    private File getImageFile() {
-        return new File(Environment.getExternalStorageDirectory(),
-                "capture.jpeg");
-    }
-
-    private void closeStream(FileInputStream inputStream) {
-        if (inputStream != null) {
-            try {
-                inputStream.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
-
 }
