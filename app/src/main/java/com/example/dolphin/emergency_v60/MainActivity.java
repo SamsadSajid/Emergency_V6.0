@@ -3,6 +3,8 @@ package com.example.dolphin.emergency_v60;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -20,6 +22,10 @@ import android.net.Uri;
 
 import com.activeandroid.query.Select;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URI;
 
 
@@ -36,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Button igallery;
     Button icamera;
     private static final int PICK_IMAGE = 100;
+    private static final int TAKE_IMAGE = 100;
     private ImageView imageview;
     User_Info user_info;
 
@@ -52,8 +59,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         sBlood = (Spinner) findViewById(R.id.sBlood);
         bEdit = (Button) findViewById(R.id.bEdit);
         bSave = (Button) findViewById(R.id.bSave);
-        igallery = (Button) findViewById(R.id.igallary);
-        icamera = (Button) findViewById(R.id.icamera);
+        igallery = (Button) findViewById(R.id.iGallary);
+        icamera = (Button) findViewById(R.id.iCamera);
         imageview = (ImageView)findViewById(R.id.imageView);
         bSave.setVisibility(View.INVISIBLE);
         eName.setEnabled(false);
@@ -100,10 +107,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         bEdit.setOnClickListener(this);
         bSave.setOnClickListener(this);
+
         igallery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 openGallery();
+            }
+        });
+
+        icamera.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v) {
+                takePhoto();
             }
         });
         vanishKeyboard();
@@ -166,24 +180,35 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void onClick(View view){
-        if(view == bSave){
-
-            eName.setEnabled(false);
-            ePhone.setEnabled(false);
-            eAddress.setEnabled(false);
-            eInstitution.setEnabled(false);
-            eEmergency1.setEnabled(false);
-            eEmergency2.setEnabled(false);
-            sBlood.setEnabled(false);
-            if(!eName.getText().toString().equals("")) {
-                User_Info userinfo = new User_Info(eName.getText().toString(), ePhone.getText().toString(), eAddress.getText().toString(),
+        if(view == bSave) {
+            /*if(!eName.getText().toString().equals("")) {
+                 user_info = new User_Info(eName.getText().toString(), ePhone.getText().toString(), eAddress.getText().toString(),
                         eInstitution.getText().toString(), eEmergency1.getText().toString(), eEmergency2.getText().toString(), sBlood.getSelectedItem().toString());
-                EmergencyApp.getWritableDatabaseUserInfo().insertUserInfo(userinfo, true);
+                user_info.save();
+                EmergencyApp.getWritableDatabaseUserInfo().insertUserInfo(user_info, true);
+            */
+            if (!eName.getText().toString().equals("")){
+                user_info.setName(eName.getText().toString());
+                user_info.setPhone(ePhone.getText().toString());
+                user_info.setAddress(eAddress.getText().toString());
+                user_info.setInstitution(eInstitution.getText().toString());
+                user_info.setEmergency1(eEmergency1.getText().toString());
+                user_info.setEmergency2(eEmergency2.getText().toString());
+                user_info.setBloodgroup(sBlood.getSelectedItem().toString());
+                user_info.save();
                 Msg.COUT(this, "Saved Successfully");
+            }
                 bEdit.setVisibility(View.VISIBLE);
                 bSave.setVisibility(View.INVISIBLE);
+                eName.setEnabled(false);
+                ePhone.setEnabled(false);
+                eAddress.setEnabled(false);
+                eInstitution.setEnabled(false);
+                eEmergency1.setEnabled(false);
+                eEmergency2.setEnabled(false);
+                sBlood.setEnabled(false);
             }
-        }
+
         else if(view == bEdit){
             eName.setEnabled(true);
             ePhone.setEnabled(true);
@@ -195,23 +220,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             bEdit.setVisibility(View.INVISIBLE);
             bSave.setVisibility(View.VISIBLE);
-            user_info.setName(eName.getText().toString());
+
+            /*user_info.setName(eName.getText().toString());
             user_info.setPhone(ePhone.getText().toString());
             user_info.setAddress(eAddress.getText().toString());
             user_info.setInstitution(eInstitution.getText().toString());
             user_info.setEmergency1(eEmergency1.getText().toString());
             user_info.setEmergency2(eEmergency2.getText().toString());
             user_info.setBloodgroup(sBlood.getSelectedItem().toString());
-            user_info.save();
-            Msg.COUT(this,"Informations Inserted Successfully");
+            user_info.save();*/
+            //Msg.COUT(this,"Informations Inserted Successfully");
         }
     }
 
     private void openGallery() {
-        Intent gallery =
-                new Intent(Intent.ACTION_PICK,
+        Intent gallery =new Intent(Intent.ACTION_PICK,
                         android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI);
         startActivityForResult(gallery, PICK_IMAGE);
+    }
+
+    private void takePhoto() {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT,
+                Uri.fromFile(getImageFile()));
+        startActivityForResult(intent, TAKE_IMAGE);
     }
 
     @Override
@@ -221,5 +253,34 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Uri imageUri = data.getData();
             imageview.setImageURI(imageUri);
         }
+
+        else if (resultCode == RESULT_OK && requestCode == TAKE_IMAGE) {
+            FileInputStream inputStream = null;
+            try {
+                inputStream = new FileInputStream(getImageFile());
+                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                imageview.setImageBitmap(bitmap);
+            } catch (FileNotFoundException e) {
+                Msg.mymsg("Cant load image");
+            } finally {
+                closeStream(inputStream);
+            }
+        }
     }
+
+    private File getImageFile() {
+        return new File(Environment.getExternalStorageDirectory(),
+                "capture.jpeg");
+    }
+
+    private void closeStream(FileInputStream inputStream) {
+        if (inputStream != null) {
+            try {
+                inputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 }

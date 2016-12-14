@@ -28,14 +28,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Take A Photo"
-        android:id="@+id/icamera"
+        android:id="@+id/iCamera"
         android:layout_gravity="right" />/>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Choose From Gallary"
-        android:id="@+id/igallary"
+        android:id="@+id/iGallary"
         android:layout_gravity="top|right"
         android:layout_weight="2.33" />
 
