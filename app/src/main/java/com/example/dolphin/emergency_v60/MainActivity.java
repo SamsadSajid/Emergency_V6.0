@@ -1,20 +1,27 @@
 package com.example.dolphin.emergency_v60;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.app.Activity;
+import android.telephony.PhoneStateListener;
+import android.telephony.TelephonyManager;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -50,6 +57,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private String sCurrentPhotoPath;
     private ImageView imageview;
     User_Info user_info;
+    final Context context = this;
+    private ImageButton ibutton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         igallery = (Button) findViewById(R.id.iGallary);
         icamera = (Button) findViewById(R.id.iCamera);
         imageview = (ImageView)findViewById(R.id.imageView);
+        ibutton = (ImageButton) findViewById(R.id.iButtonCall);
         bSave.setVisibility(View.INVISIBLE);
         eName.setEnabled(false);
         ePhone.setEnabled(false);
@@ -75,9 +85,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         eEmergency1.setEnabled(false);
         eEmergency2.setEnabled(false);
         sBlood.setEnabled(false);
-
-
-       //nicher EmergencyApp name ta change hobe
 
         ArrayAdapter<CharSequence> adapterBlood = ArrayAdapter.createFromResource(this,
                 R.array.BloodGroup, android.R.layout.simple_spinner_item);
@@ -115,6 +122,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         bEdit.setOnClickListener(this);
         bSave.setOnClickListener(this);
 
+        //this block is for phone call
+
+        PhoneCallListener phoneListener = new PhoneCallListener();
+        TelephonyManager telephonyManager = (TelephonyManager) this
+                .getSystemService(Context.TELEPHONY_SERVICE);
+        telephonyManager.listen(phoneListener, PhoneStateListener.LISTEN_CALL_STATE);
+
+        ibutton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+
+                Intent callIntent = new Intent(Intent.ACTION_CALL);
+                callIntent.setData(Uri.parse("tel:"+((EditText)findViewById(R.id.ePhone)).getText()));
+                if (ContextCompat.checkSelfPermission(context,
+                        Manifest.permission.READ_CONTACTS)
+                        != PackageManager.PERMISSION_GRANTED) {
+
+                    startActivity(callIntent);
+                }
+            }
+
+        });
+
+        //end of phone call block within onCreate()
+
         igallery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -129,6 +162,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
         vanishKeyboard();
     }
+
     private void vanishKeyboard() {
         eName.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             public void onFocusChange(View v, boolean hasFocus) {
@@ -239,6 +273,57 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             //Msg.COUT(this,"Informations Inserted Successfully");
         }
     }
+
+    //for phone call
+
+    //monitor phone call activities
+
+    public class PhoneCallListener extends PhoneStateListener {
+
+        private boolean isPhoneCalling = false;
+
+        String LOG_TAG = "LOGGING 123";
+
+        @Override
+        public void onCallStateChanged(int state, String incomingNumber) {
+
+            if (TelephonyManager.CALL_STATE_RINGING == state) {
+                // phone ringing
+                android.util.Log.i(LOG_TAG, "RINGING, number: " + incomingNumber);
+            }
+
+            if (TelephonyManager.CALL_STATE_OFFHOOK == state) {
+                // active
+                android.util.Log.i(LOG_TAG, "OFFHOOK");
+
+                isPhoneCalling = true;
+            }
+
+            if (TelephonyManager.CALL_STATE_IDLE == state) {
+                // run when class initial and phone call ended,
+                // need detect flag from CALL_STATE_OFFHOOK
+                android.util.Log.i(LOG_TAG, "IDLE");
+
+                if (isPhoneCalling) {
+
+                    android.util.Log.i(LOG_TAG, "restart app");
+
+                    // restart app
+                    Intent i = getBaseContext().getPackageManager()
+                            .getLaunchIntentForPackage(
+                                    getBaseContext().getPackageName());
+                    i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    context.startActivity(i);
+
+                    isPhoneCalling = false;
+                }
+
+            }
+        }
+    }
+
+
+
 
     private void openGallery() {
         Intent gallery =new Intent(Intent.ACTION_PICK,
